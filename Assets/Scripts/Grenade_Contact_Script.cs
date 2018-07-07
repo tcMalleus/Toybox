@@ -21,15 +21,22 @@ public class Grenade_Contact_Script : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        ObjectsToAffect.Add(other.attachedRigidbody);
+		if (other.GetComponent<Rigidbody> () != null) 
+		{
+			ObjectsToAffect.Add (other.attachedRigidbody);
+		}
     }
+
+	private void OnTriggerExit(Collider other)
+	{
+		ObjectsToAffect.Remove(other.attachedRigidbody);
+	}
 
     private void OnCollisionEnter(Collision collision)
     {
         foreach (Rigidbody added in ObjectsToAffect)
         {
-            Rigidbody rb = added;
-            rb.AddExplosionForce(ExplosionPow, _explosionPos, _explosionRad, ExplosionLift);
+            added.AddExplosionForce(ExplosionPow, _explosionPos, _explosionRad, ExplosionLift);
         }
     }
 }
