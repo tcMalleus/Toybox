@@ -7,7 +7,9 @@ public class Grenade_Contact_Script : MonoBehaviour {
     public float ExplosionPow;
     public float ExplosionLift;
     public SphereCollider ExplosionArea;
-    public List<Rigidbody> ObjectsToAffect;
+    public List<Rigidbody> RigidsAffected;
+    public int Damage;
+    public List<GameObject> ObjectsDamaged;
 
     private Vector3 _explosionPos;
     private float _explosionRad;
@@ -23,20 +25,32 @@ public class Grenade_Contact_Script : MonoBehaviour {
     {
 		if (other.GetComponent<Rigidbody> () != null) 
 		{
-			ObjectsToAffect.Add (other.attachedRigidbody);
+			RigidsAffected.Add (other.attachedRigidbody);
 		}
+
+        if (other.GetComponent<Health_Script> () != null)
+        {
+            ObjectsDamaged.Add (other.gameObject);
+        }
     }
 
 	private void OnTriggerExit(Collider other)
 	{
-		ObjectsToAffect.Remove(other.attachedRigidbody);
+		RigidsAffected.Remove(other.attachedRigidbody);
 	}
 
     private void OnCollisionEnter(Collision collision)
     {
-        foreach (Rigidbody added in ObjectsToAffect)
+        foreach (Rigidbody added in RigidsAffected)
         {
             added.AddExplosionForce(ExplosionPow, _explosionPos, _explosionRad, ExplosionLift);
         }
+
+        foreach (GameObject added in ObjectsDamaged)
+        {
+            Component _healthScript = added.GetComponent<Health_Script>();
+        }
+
+        //Destroy(gameObject);
     }
 }
